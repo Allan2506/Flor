@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Flores Amarillas 🌻</title>
+    <style>
+        :root {
+            --bg-color: #fef9e7; 
+            --stem-color: #43a047;
+            --petal-color: #ffeb3b;
+            --center-color: #5d4037;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: manipulation;
+        }
+
+        /* Contenedor principal */
+        .world {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .message {
+            position: absolute;
+            top: 15%;
+            width: 90%;
+            text-align: center;
+            font-size: 1.8rem;
+            color: #d35400;
+            z-index: 20;
+            font-weight: bold;
+            pointer-events: none;
+            text-shadow: 1px 1px 10px rgba(255,255,255,0.8);
+        }
+
+        /* Estilo de las flores */
+        .flower {
+            position: absolute;
+            bottom: -5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform-origin: bottom center;
+            animation: sway 4s ease-in-out infinite alternate;
+        }
+
+        .stem {
+            width: 6px;
+            background: linear-gradient(to top, var(--stem-color), #66bb6a);
+            border-radius: 10px;
+        }
+
+        .head {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            margin-bottom: -10px;
+        }
+
+        .center {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: var(--center-color);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        .petals {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            animation: rotateFlower 15s linear infinite;
+        }
+
+        .petal {
+            position: absolute;
+            background: var(--petal-color);
+            width: 18px;
+            height: 30px;
+            border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%;
+            left: 16px;
+            top: -5px;
+            transform-origin: center 30px;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Pétalos cayendo */
+        .falling-petal {
+            position: absolute;
+            background-color: var(--petal-color);
+            width: 10px;
+            height: 15px;
+            border-radius: 50% 0 50% 0;
+            opacity: 0.8;
+            z-index: 5;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); left: var(--x); }
+            100% { transform: translateY(110vh) rotate(360deg); left: var(--x2); }
+        }
+
+        @keyframes sway {
+            from { transform: rotate(-5deg); }
+            to { transform: rotate(5deg); }
+        }
+
+        @keyframes rotateFlower {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Instrucción sutil para el usuario */
+        .hint {
+            position: absolute;
+            bottom: 20px;
+            font-size: 0.8rem;
+            color: #a0a0a0;
+            z-index: 30;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="world" id="world">
+        <div class="message">Para la dueña de todo mi corazón 🌻</div>
+        <div class="hint">(La pre novia más linda del mundo jajaja te amo ❤️)</div>
+    </div>
+
+    <audio id="audio" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const world = document.getElementById('world');
+        const audio = document.getElementById('audio');
+
+        // Activar música al tocar
+        document.body.addEventListener('click', () => {
+            audio.play();
+            document.querySelector('.message').innerText = "Te amo mucho genuinamente 💛";
+            document.querySelector('.hint').style.display = "none";
+        }, { once: true });
+
+        function createFlower() {
+            const flower = document.createElement('div');
+            flower.className = 'flower';
+            
+            // Ajuste para pantallas pequeñas
+            const xPos = Math.random() * 90 + 5;
+            const height = 120 + Math.random() * 200; 
+            const sizeScale = 0.7 + Math.random() * 0.5;
+            const delay = Math.random() * -10;
+
+            flower.style.left = xPos + '%';
+            flower.style.animationDelay = delay + 's';
+            flower.style.transform = `scale(${sizeScale})`;
+
+            flower.innerHTML = `
+                <div class="head">
+                    <div class="center"></div>
+                    <div class="petals">
+                        ${Array(10).fill(0).map((_, i) => `<div class="petal" style="transform: rotate(${i * 36}deg)"></div>`).join('')}
+                    </div>
+                </div>
+                <div class="stem" style="height: ${height}px"></div>
+            `;
+            world.appendChild(flower);
+        }
+
+        function createFallingPetal() {
+            const petal = document.createElement('div');
+            petal.className = 'falling-petal';
+            const xStart = Math.random() * 100;
+            const xEnd = xStart + (Math.random() * 20 - 10);
+            const duration = 5 + Math.random() * 5;
+
+            petal.style.setProperty('--x', xStart + 'vw');
+            petal.style.setProperty('--x2', xEnd + 'vw');
+            petal.style.animationDuration = duration + 's';
+            
+            world.appendChild(petal);
+
+            // Eliminar pétalo después de la animación
+            setTimeout(() => petal.remove(), duration * 1000);
+        }
+
+        // Inicializar jardín
+        const flowerCount = window.innerWidth < 600 ? 8 : 15;
+        for(let i = 0; i < flowerCount; i++) {
+            createFlower();
+        }
+
+        // Crear pétalos cayendo cada cierto tiempo
+        setInterval(createFallingPetal, 300);
+    </script>
+</body>
+</html>
