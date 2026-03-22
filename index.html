@@ -23,7 +23,6 @@
             touch-action: manipulation;
         }
 
-        /* Contenedor principal */
         .world {
             position: relative;
             width: 100vw;
@@ -45,6 +44,7 @@
             font-weight: bold;
             pointer-events: none;
             text-shadow: 1px 1px 10px rgba(255,255,255,0.8);
+            transition: opacity 0.5s ease;
         }
 
         /* Estilo de las flores */
@@ -81,7 +81,6 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 2;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
         }
 
         .petals {
@@ -100,7 +99,6 @@
             left: 16px;
             top: -5px;
             transform-origin: center 30px;
-            box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
         /* Pétalos cayendo */
@@ -115,9 +113,25 @@
             animation: fall linear infinite;
         }
 
+        /* Corazones al tocar */
+        .heart {
+            position: absolute;
+            color: #e74c3c;
+            font-size: 20px;
+            user-select: none;
+            pointer-events: none;
+            z-index: 100;
+            animation: fly 2s linear forwards;
+        }
+
         @keyframes fall {
             0% { transform: translateY(-10vh) rotate(0deg); left: var(--x); }
             100% { transform: translateY(110vh) rotate(360deg); left: var(--x2); }
+        }
+
+        @keyframes fly {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-150px) scale(1.5); opacity: 0; }
         }
 
         @keyframes sway {
@@ -130,21 +144,21 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Instrucción sutil para el usuario */
         .hint {
             position: absolute;
             bottom: 20px;
             font-size: 0.8rem;
             color: #a0a0a0;
             z-index: 30;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
     <div class="world" id="world">
-        <div class="message">Para la dueña de todo mi corazón 🌻</div>
-        <div class="hint">(La pre novia más linda del mundo jajaja te amo ❤️)</div>
+        <div class="message" id="msg">Para la dueña de todo mi corazón 🌻</div>
+        <div class="hint" id="hintText">(La pre novia más linda del mundo jajaja te amo ❤️)</div>
     </div>
 
     <audio id="audio" loop>
@@ -154,19 +168,41 @@
     <script>
         const world = document.getElementById('world');
         const audio = document.getElementById('audio');
+        const msg = document.getElementById('msg');
+        const hint = document.getElementById('hintText');
 
-        // Activar música al tocar
-        document.body.addEventListener('click', () => {
-            audio.play();
-            document.querySelector('.message').innerText = "Te amo mucho genuinamente 💛";
-            document.querySelector('.hint').style.display = "none";
-        }, { once: true });
+        // Lógica de audio y cambio de mensajes
+        document.body.addEventListener('click', (e) => {
+            if (audio.paused) {
+                audio.play();
+                msg.innerText = "Te amo mucho genuinamente 💛";
+                hint.style.display = "none";
+                
+                // Cambio de mensaje secundario después de 4 segundos
+                setTimeout(() => {
+                    msg.style.opacity = 0;
+                    setTimeout(() => {
+                        msg.innerText = "¡Feliz inicio de Primavera! ✨";
+                        msg.style.opacity = 1;
+                    }, 500);
+                }, 4000);
+            }
+            createHeart(e.clientX, e.clientY);
+        });
+
+        function createHeart(x, y) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = (x - 10) + 'px';
+            heart.style.top = (y - 10) + 'px';
+            world.appendChild(heart);
+            setTimeout(() => heart.remove(), 2000);
+        }
 
         function createFlower() {
             const flower = document.createElement('div');
             flower.className = 'flower';
-            
-            // Ajuste para pantallas pequeñas
             const xPos = Math.random() * 90 + 5;
             const height = 120 + Math.random() * 200; 
             const sizeScale = 0.7 + Math.random() * 0.5;
@@ -198,20 +234,15 @@
             petal.style.setProperty('--x', xStart + 'vw');
             petal.style.setProperty('--x2', xEnd + 'vw');
             petal.style.animationDuration = duration + 's';
-            
             world.appendChild(petal);
-
-            // Eliminar pétalo después de la animación
             setTimeout(() => petal.remove(), duration * 1000);
         }
 
-        // Inicializar jardín
         const flowerCount = window.innerWidth < 600 ? 8 : 15;
         for(let i = 0; i < flowerCount; i++) {
             createFlower();
         }
 
-        // Crear pétalos cayendo cada cierto tiempo
         setInterval(createFallingPetal, 300);
     </script>
 </body>
