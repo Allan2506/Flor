@@ -96,7 +96,7 @@
         .message h1 {
             font-size: clamp(1.5rem, 5vw, 2.6rem);
             font-weight: 500;
-            color: #ffd83d; /* Ajustado para fondo oscuro */
+            color: #ffd83d;
             letter-spacing: 1px;
             text-shadow: 0 2px 15px rgba(255, 216, 61, 0.4);
         }
@@ -104,7 +104,7 @@
         .message p {
             margin-top: 10px;
             font-size: clamp(0.9rem, 3vw, 1.1rem);
-            color: #fff176; /* Ajustado para fondo oscuro */
+            color: #fff176;
             font-style: italic;
         }
 
@@ -116,12 +116,8 @@
             left: 50%;
             bottom: 0;
             width: 260px;
-            height: 72vh;
+            height: 100vh; /* Altura completa para alinear bien el tallo */
             transform: translateX(-50%);
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            flex-direction: column;
             z-index: 10;
         }
 
@@ -133,7 +129,7 @@
             bottom: 0;
             left: 50%;
             width: 7px;
-            height: 0;
+            height: 0; /* Crece hasta 58vh */
             transform: translateX(-50%);
             background: linear-gradient(
                 to right,
@@ -144,6 +140,7 @@
             border-radius: 20px;
             box-shadow: 0 0 8px rgba(44, 110, 48, 0.25);
             animation: growStem 3s cubic-bezier(.22,.61,.36,1) forwards;
+            z-index: 1;
         }
 
         /* =====================================================
@@ -155,23 +152,24 @@
             height: 35px;
             background: linear-gradient(135deg, #5daa58, #2f7835);
             opacity: 0;
-            transform-origin: 100% 50%;
-            border-radius: 100% 0 100% 0;
             z-index: 2;
         }
 
         .leaf.left {
-            left: 42px;
-            bottom: 27%;
+            left: 52px; /* Alineada exactamente al tallo */
+            bottom: 27vh;
+            transform-origin: 100% 50%;
+            border-radius: 100% 0 100% 0;
             transform: rotate(-28deg) scale(0);
             animation: leafAppearLeft 1.2s ease-out forwards 2.3s;
         }
 
         .leaf.right {
-            right: 42px;
-            bottom: 39%;
-            transform: rotate(208deg) scale(0);
-            /* Se asignó su propia animación para mantener la simetría */
+            right: 52px; /* Alineada exactamente al tallo */
+            bottom: 35vh;
+            transform-origin: 0% 50%; /* Ahora nace desde su lado izquierdo */
+            border-radius: 0 100% 0 100%; /* Forma invertida para simetría */
+            transform: rotate(28deg) scale(0);
             animation: leafAppearRight 1.2s ease-out forwards 2.6s;
         }
 
@@ -181,10 +179,18 @@
             width: 55px;
             height: 2px;
             background: rgba(255,255,255,0.22);
-            left: 10px;
             top: 17px;
-            transform: rotate(-8deg);
             border-radius: 20px;
+        }
+
+        .leaf.left::after {
+            left: 10px;
+            transform: rotate(-8deg);
+        }
+
+        .leaf.right::after {
+            right: 10px;
+            transform: rotate(8deg);
         }
 
         /* =====================================================
@@ -193,10 +199,11 @@
         .flower-head {
             position: absolute;
             left: 50%;
-            bottom: 68%;
+            bottom: 58vh; /* Se asienta exactamente en la punta del tallo */
             width: 210px;
             height: 210px;
-            transform: translateX(-50%) scale(0.15);
+            /* translateY(50%) baja la caja justo a la mitad para que el centro sea la punta del tallo */
+            transform: translateX(-50%) translateY(50%) scale(0.15);
             opacity: 0;
             animation: flowerRise 2s cubic-bezier(.22,.61,.36,1) forwards 2.7s;
             z-index: 20;
@@ -219,9 +226,9 @@
             top: 50%;
             width: 42px;
             height: 82px;
-            margin-left: -21px;
-            margin-top: -41px;
-            transform-origin: 50% 100%;
+            margin-left: -21px; 
+            margin-top: -82px; /* ESTO ES LA CLAVE: La base del pétalo ahora está exactamente en el centro */
+            transform-origin: 50% 100%; /* Rota desde su base */
             opacity: 0;
             border-radius: 55% 55% 48% 48% / 70% 70% 35% 35%;
             background: radial-gradient(
@@ -236,7 +243,7 @@
         }
 
         /* =====================================================
-           CENTRO DE LA FLOR
+           CENTRO DE LA FLOR (LA BOLA CAFÉ)
         ===================================================== */
         .flower-center {
             position: absolute;
@@ -298,7 +305,7 @@
             bottom: 5%;
             left: 50%;
             transform: translateX(-50%);
-            color: #fff176; /* Ajustado para fondo oscuro */
+            color: #fff176;
             font-size: 0.85rem;
             letter-spacing: 1px;
             opacity: 0;
@@ -315,9 +322,9 @@
         }
 
         @keyframes flowerRise {
-            0% { opacity: 0; transform: translateX(-50%) translateY(90px) scale(0.15); }
-            70% { opacity: 1; transform: translateX(-50%) translateY(-8px) scale(1.03); }
-            100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+            0% { opacity: 0; transform: translateX(-50%) translateY(150%) scale(0.15); }
+            70% { opacity: 1; transform: translateX(-50%) translateY(45%) scale(1.03); }
+            100% { opacity: 1; transform: translateX(-50%) translateY(50%) scale(1); }
         }
 
         @keyframes petalBloom {
@@ -332,18 +339,16 @@
             100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
-        /* Animación para la hoja izquierda */
         @keyframes leafAppearLeft {
             0% { opacity: 0; transform: rotate(-28deg) scale(0); }
             70% { opacity: 1; transform: rotate(-28deg) scale(1.08); }
             100% { opacity: 1; transform: rotate(-28deg) scale(1); }
         }
 
-        /* Animación para la hoja derecha (esto arregla el centrado) */
         @keyframes leafAppearRight {
-            0% { opacity: 0; transform: rotate(208deg) scale(0); }
-            70% { opacity: 1; transform: rotate(208deg) scale(1.08); }
-            100% { opacity: 1; transform: rotate(208deg) scale(1); }
+            0% { opacity: 0; transform: rotate(28deg) scale(0); }
+            70% { opacity: 1; transform: rotate(28deg) scale(1.08); }
+            100% { opacity: 1; transform: rotate(28deg) scale(1); }
         }
 
         @keyframes glowPulse {
@@ -368,14 +373,15 @@
         @media (max-width: 600px) {
             .flower-container { width: 230px; }
             .flower-head { width: 190px; height: 190px; }
-            .petal { width: 38px; height: 74px; margin-left: -19px; margin-top: -37px; }
+            .petal { width: 38px; height: 74px; margin-left: -19px; margin-top: -74px; }
             .flower-center { width: 62px; height: 62px; }
+            .leaf.left { left: 36px; }
+            .leaf.right { right: 36px; }
             .message { top: 7%; }
         }
 
         @media (max-height: 650px) {
             .message { top: 4%; }
-            .flower-head { bottom: 68%; }
         }
     </style>
 </head>
@@ -465,7 +471,7 @@
         });
 
         /* =====================================================
-           CORAZONES (Script reparado)
+           CORAZONES
         ===================================================== */
         function createHeart(x, y) {
             const heart = document.createElement("div");
@@ -479,7 +485,6 @@
 
             document.body.appendChild(heart);
 
-            // Eliminar el corazón del DOM después de que termine la animación para evitar saturar la memoria
             setTimeout(() => {
                 heart.remove();
             }, 1800);
